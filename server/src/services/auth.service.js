@@ -4,6 +4,14 @@ import { findByEmail } from "../models/users.model.js";
 import { generateToken } from "../utils/generateToken.js";
 
 export async function login( email, password ){
+    if(!email || !password){
+        throw new AppError(
+            400,
+            "MISSING_CREDENTIALS",
+            "Email and password are required"
+        );
+    }
+    
     const user = await findByEmail(email);
 
     if(!user){
