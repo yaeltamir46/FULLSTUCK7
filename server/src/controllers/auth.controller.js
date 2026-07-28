@@ -1,4 +1,4 @@
-import { login as loginService } from "../services/auth.service.js";
+import { login as loginService, register as registerService } from "../services/auth.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const login = asyncHandler(
@@ -8,3 +8,10 @@ export const login = asyncHandler(
         res.status(200).json({data: result});
     }
 );
+
+export const register = asyncHandler(async (req, res) => {
+
+    const result = await registerService(req.body);
+    res.status(201).json({data: result, message: "User created successfully"});
+
+});
