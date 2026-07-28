@@ -1,3 +1,5 @@
+// maybe unnecessary middleware
+
 export function asyncHandler(handler) {
 
     return function(req, res, next) {
