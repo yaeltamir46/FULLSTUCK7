@@ -2,7 +2,9 @@ import express from "express";
 import { env } from "./config/env.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { notFoundHandler } from "./middleware/notFound.middleware.js";
+
 import authRoutes from "./routes/auth.routes.js";
+import productsRoutes from "./routes/products.routes.js";
 
 const app = express();
 
@@ -14,6 +16,7 @@ app.get("/", (req, res) => {
 
 //routes
 app.use("/auth", authRoutes);
+app.use("/products", productsRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
