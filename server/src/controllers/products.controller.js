@@ -1,4 +1,4 @@
-import { getProducts as getProductsService } from "../services/products.service.js";
+import { getProducts as getProductsService, getProductById as getProduct} from "../services/products.service.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getProducts = asyncHandler(async (req, res) => {
@@ -17,3 +17,9 @@ export const getProducts = asyncHandler(async (req, res) => {
             }
         });
 })
+
+
+export const getProductById = asyncHandler(async (req, res) => {
+    const product = await getProduct(req.params.id);
+    res.status(200).json( product);
+});

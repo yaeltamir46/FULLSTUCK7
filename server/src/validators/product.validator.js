@@ -15,3 +15,16 @@ export const getProductsSchema = Joi.object({
         .default(12)
 
 });
+
+
+export const productIdSchema = Joi.object({
+
+    id: Joi.string()
+        // .guid({
+        //     version: [
+        //         "uuidv4"
+        //     ]
+        // })
+        .required()
+
+});
