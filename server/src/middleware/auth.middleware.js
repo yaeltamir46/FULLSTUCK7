@@ -28,7 +28,8 @@ export async function authenticate(req,res,next){
 
         }
         const token = parts[1];
-        const decoded = jwt.verify(token, env.JWT_SECRET);
+        //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4ODY0MTU3LTUyMzgtNDVkMy1iZjQwLTMxZjY5ZGM3ZGYwZiIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc4NTYyMDQ3MywiZXhwIjoxNzg1NzA2ODczfQ.jQS-MdgZLhMq6QS2WvtsXGqOyFAMJ2oGwzWz-_h-12I
+        const decoded = jwt.verify(token, env.jwtSecret);
 
         req.user = {
             id: decoded.id,
@@ -38,6 +39,7 @@ export async function authenticate(req,res,next){
         next();
     }
     catch(err){
+        console.error("Authentication error:", err);
         next(
             new AppError(
                 401,

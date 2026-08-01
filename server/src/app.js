@@ -5,6 +5,8 @@ import { notFoundHandler } from "./middleware/notFound.middleware.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import productsRoutes from "./routes/products.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
+
 
 const app = express();
 
@@ -17,6 +19,7 @@ app.get("/", (req, res) => {
 //routes
 app.use("/auth", authRoutes);
 app.use("/products", productsRoutes);
+app.use("/cart", cartRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

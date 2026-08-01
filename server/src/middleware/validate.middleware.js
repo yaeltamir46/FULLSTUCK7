@@ -1,39 +1,36 @@
-// maybe unnecessary middleware, we can do validation in the controller
 import AppError from "../utils/AppError.js";
-
-export function validate(schema){
+export function validate(schema, source = "body"){
 
     return function(req,res,next){
-        const result =
-            schema.validate(
-                req.body,
-                {
-                    abortEarly:false
-                }
-            );
+
+        const result = schema.validate(
+            req[source],
+            {
+                abortEarly:false
+            }
+        );
 
         if(result.error){
+
             const details={};
+
             result.error.details.forEach(err=>{
                 const field = err.path.join(".");
                 details[field]=err.message;
             });
-            
-            return next(
 
+            return next(
                 new AppError(
                     400,
                     "VALIDATION_ERROR",
                     "Invalid input",
                     details
                 )
-
             );
-
         }
-        req.body=result.value;
+
+        req[source] = result.value;
+
         next();
-
     };
-
 }
