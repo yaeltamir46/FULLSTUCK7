@@ -18,7 +18,7 @@ export async function getProducts(offset, limit) {
         LEFT JOIN categories c
         ON p.category_id = c.id
 
-        WHERE p.is_active = true AND p.is_active = true AND p.stock_quantity > 0
+        WHERE p.is_active = true AND p.stock_quantity > 0
         ORDER BY p.created_at DESC
         LIMIT ${Number(limit)} OFFSET ${Number(offset)}`
     );
@@ -58,4 +58,20 @@ export async function findById(productId) {
 
     return rows[0] || null;
 
+}
+
+export async function decreaseStock(connection,productId,quantity) {
+    const [result] = await connection.execute(
+        `
+        UPDATE products
+        SET stock_quantity = stock_quantity - ?
+        WHERE
+            id = ?
+            AND is_active = TRUE
+            AND stock_quantity >= ?
+        `,
+        [quantity, productId, quantity]
+    );
+
+    return result.affectedRows === 1;
 }

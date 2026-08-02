@@ -83,3 +83,26 @@ export async function removeItem(cartId, productId){
     );
 
 }
+
+export async function findByCartIdForUpdate(connection, cartId) {
+    const [rows] = await connection.execute(
+        `
+        SELECT
+            ci.cart_id AS cartId,
+            ci.product_id AS productId,
+            ci.quantity,
+            p.name,
+            p.price,
+            p.stock_quantity AS stockQuantity,
+            p.is_active AS isActive
+        FROM cart_items ci
+        INNER JOIN products p
+            ON p.id = ci.product_id
+        WHERE ci.cart_id = ?
+        FOR UPDATE
+        `,
+        [cartId]
+    );
+
+    return rows;
+}
