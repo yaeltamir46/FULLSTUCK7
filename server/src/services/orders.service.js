@@ -15,8 +15,10 @@ import {
 import {
     create as createOrder,
     findById as findOrderById,
-        findAllByUserId,
-    findAccessibleById
+    findAllByUserId,
+    findAccessibleById,
+    findAll,
+    updateStatus as updateOrderStatus
 } from "../models/orders.model.js";
 
 import {
@@ -38,7 +40,7 @@ export async function create(userId, shippingAddress) {
             );
         }
 
-        const items = await findByCartIdForUpdate(connection,cart.id);
+        const items = await findByCartIdForUpdate(connection, cart.id);
 
         if (items.length === 0) {
             throw new AppError(
@@ -174,4 +176,51 @@ export async function getOrderById(
             lineTotal: Number(item.lineTotal)
         }))
     };
+}
+
+export async function getAll(filters) {
+
+    // console.log("filters in service:", filters);
+   const page = Number(filters.page ?? 1);
+    const limit = Number(filters.limit ?? 12);
+
+
+    const result = await findAll({
+        ...filters,
+        page,
+        limit
+    });
+
+    return {
+        orders: result.orders.map(order => ({
+            ...order,
+            totalPrice: Number(order.totalPrice),
+            totalItems: Number(order.totalItems)
+        })),
+
+        pagination: {
+            page,
+            limit,
+            totalItems: Number(result.totalItems),
+            totalPages: Math.ceil(
+                Number(result.totalItems) / limit
+            )
+        }
+    };
+}
+
+export async function updateStatus( orderId, status){
+
+    const updated = await updateOrderStatus( orderId,status);
+
+    if(!updated){
+
+        throw new AppError(
+            404,
+            "ORDER_NOT_FOUND",
+            "Order not found"
+        );
+
+    }
+
 }

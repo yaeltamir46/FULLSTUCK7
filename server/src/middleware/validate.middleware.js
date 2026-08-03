@@ -1,22 +1,25 @@
 import AppError from "../utils/AppError.js";
-export function validate(schema, source = "body"){
 
-    return function(req,res,next){
+export function validate(schema, source = "body") {
+
+    return function (req, res, next) {
 
         const result = schema.validate(
             req[source],
             {
-                abortEarly:false
+                abortEarly: false,
+                stripUnknown: true,
+                convert: true
             }
         );
 
-        if(result.error){
+        if (result.error) {
 
-            const details={};
+            const details = {};
 
-            result.error.details.forEach(err=>{
-                const field = err.path.join(".");
-                details[field]=err.message;
+            result.error.details.forEach((error) => {
+                const field = error.path.join(".");
+                details[field] = error.message;
             });
 
             return next(
@@ -29,7 +32,11 @@ export function validate(schema, source = "body"){
             );
         }
 
-        req[source] = result.value;
+        if (source === "query") {
+            req.validatedQuery = result.value;
+        } else {
+            req[source] = result.value;
+        }
 
         next();
     };

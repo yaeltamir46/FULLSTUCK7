@@ -37,3 +37,49 @@ export const orderIdSchema = Joi.object({
         // })
         .required()
 });
+
+export const updateOrderStatusSchema =
+Joi.object({
+
+    status:Joi.string()
+    .valid(
+        "pending",
+        "processing",
+        "shipped",
+        "completed",
+        "cancelled"
+    )
+    .required()
+
+});
+
+export const getOrdersQuerySchema = Joi.object({
+
+    status: Joi.string()
+        .valid(
+            "pending",
+            "processing",
+            "shipped",
+            "completed",
+            "cancelled"
+        )
+        .optional(),
+
+    search: Joi.string()
+        .trim()
+        .max(255)
+        .allow("")
+        .optional(),
+
+    page: Joi.number()
+        .integer()
+        .min(1)
+        .default(1),
+
+    limit: Joi.number()
+        .integer()
+        .min(1)
+        .max(100)
+        .default(12)
+
+});

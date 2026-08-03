@@ -30,7 +30,7 @@ export async function create(
             totalPrice,
             shippingAddress.shippingCity,
             shippingAddress.shippingStreet,
-            shippingAddress.shippingHouseNumber,
+            shippingAddress.shipק3pingHouseNumber,
             shippingAddress.shippingApartment || null,
             shippingAddress.shippingPostalCode || null
         ]
@@ -135,4 +135,124 @@ export async function findAccessibleById(
     const [rows] = await db.execute(query, values);
 
     return rows[0] || null;
+}
+
+export async function findAll(filters = {}) {
+
+    const { status, search, page = 1, limit = 12 } = filters;
+
+    const limitNumber = Number(limit);
+    const pageNumber = Number(page);
+    const offset = (pageNumber - 1) * limitNumber;
+
+    let whereClause = `WHERE 1 = 1 `;
+
+    const values = [];
+
+    if (status) {
+        whereClause += `AND o.status = ?`;
+        values.push(status);
+    }
+
+    if (search) {
+        whereClause += `
+            AND (
+                o.id LIKE ?
+                OR CONCAT(u.first_name, ' ', u.last_name) LIKE ?
+                OR u.email LIKE ?
+            )
+        `;
+
+        const searchValue = `%${search}%`;
+
+        values.push(
+            searchValue,
+            searchValue,
+            searchValue
+        );
+    }
+
+    const [orders] = await db.execute(
+        `
+        SELECT
+            o.id,
+            o.user_id AS userId,
+
+            CONCAT(
+                u.first_name,
+                ' ',
+                u.last_name
+            ) AS customerName,
+
+            u.email,
+
+            o.total_price AS totalPrice,
+            o.status,
+
+            o.created_at AS createdAt,
+            o.updated_at AS updatedAt,
+
+            COALESCE(
+                SUM(oi.quantity),
+                0
+            ) AS totalItems
+
+        FROM orders o
+
+        INNER JOIN users u
+            ON u.id = o.user_id
+
+        LEFT JOIN order_items oi
+            ON oi.order_id = o.id
+
+        ${whereClause}
+
+        GROUP BY
+            o.id,
+            o.user_id,
+            u.first_name,
+            u.last_name,
+            u.email,
+            o.total_price,
+            o.status,
+            o.created_at,
+            o.updated_at
+
+        ORDER BY o.created_at DESC
+
+        LIMIT ${limitNumber}
+        OFFSET ${offset}
+        `,
+        values
+    );
+
+    const [countRows] = await db.execute(
+        `
+        SELECT COUNT(*) AS totalItems
+        FROM orders o
+        INNER JOIN users u
+            ON u.id = o.user_id
+        ${whereClause}
+        `,
+        values
+    );
+
+    return {
+        orders,
+        totalItems: countRows[0].totalItems
+    };
+}
+
+export async function updateStatus(orderId,status,connection = db) {
+
+    const [result] = await connection.execute(
+        `
+        UPDATE orders
+        SET status = ?
+        WHERE id = ?
+        `,
+        [ status, orderId ]
+    );
+
+    return result.affectedRows > 0;
 }
