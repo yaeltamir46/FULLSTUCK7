@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import AppError from "../utils/AppError.js";
-import { findByEmail, createUser } from "../models/users.model.js";
+import { findByEmail, createUser, findById } from "../models/users.model.js";
 import { generateToken } from "../utils/generateToken.js";
 
 export async function login( email, password ){
@@ -73,4 +73,19 @@ export async function register(userData) {
 
     
 
+}
+
+export async function getCurrentUser(userId) {
+
+    const user = await findById(userId);
+
+    if (!user) {
+        throw new AppError(
+            404,
+            "USER_NOT_FOUND",
+            "User not found"
+        );
+    }
+
+    return user;
 }
