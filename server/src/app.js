@@ -9,10 +9,12 @@ import cartRoutes from "./routes/cart.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 
+import path from "path";
 
 const app = express();
 
 app.use(express.json());
+app.use("/uploads", express.static(path.resolve("uploads")) );
 
 app.get("/", (req, res) => {
     res.send("Server is running");
