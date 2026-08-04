@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto";
 import AppError from "../utils/AppError.js";
+import {ensureCategoryExists} from "../services/categories.service.js"
 
 import {
     getProducts as getProductsFromDB,
     getAdminProducts as getAdminProductsFromDB,
     findById,
-    findActiveCategoryById,
     insertProduct,
     updateProductById,
     softDeleteProduct
@@ -60,17 +60,17 @@ export async function getProductById(productId) {
 }
 
 //TODO: move this to category model and service
-async function ensureCategoryExists(categoryId) {
+// async function ensureCategoryExists(categoryId) {
 
-    const category = await findActiveCategoryById(categoryId);
-    if (!category) {
-        throw new AppError(
-            404,
-            "CATEGORY_NOT_FOUND",
-            "Category not found"
-        );
-    }
-}
+//     const category = await findActiveCategoryById(categoryId);
+//     if (!category) {
+//         throw new AppError(
+//             404,
+//             "CATEGORY_NOT_FOUND",
+//             "Category not found"
+//         );
+//     }
+// }
 
 export async function createProduct(productData) {
 

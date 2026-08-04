@@ -1,5 +1,6 @@
 import db from "../config/db.js";
 import { transactionHandler } from "../utils/transactionHandler.js";
+import {findActiveCategoryById} from "../models/categories.model.js"
 
 export async function getProducts(offset, limit) {
     const [products] = await db.execute(
@@ -141,22 +142,22 @@ export async function decreaseStock(connection, productId, quantity) {
 }
 
 //TODO: move this to category model and service
-export async function findActiveCategoryById(categoryId) {
+// export async function findActiveCategoryById(categoryId) {
 
-    const [rows] = await db.execute(
-        `
-        SELECT id
-        FROM categories
-        WHERE
-            id = ?
-            AND is_active = TRUE
-            AND deleted_at IS NULL
-        `,
-        [categoryId]
-    );
+//     const [rows] = await db.execute(
+//         `
+//         SELECT id
+//         FROM categories
+//         WHERE
+//             id = ?
+//             AND is_active = TRUE
+//             AND deleted_at IS NULL
+//         `,
+//         [categoryId]
+//     );
 
-    return rows[0] || null;
-}
+//     return rows[0] || null;
+// }
 
 export async function insertProduct(product) {
 

@@ -8,6 +8,7 @@ import productsRoutes from "./routes/products.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
 import usersRoutes from "./routes/users.routes.js";
+import categoriesRoutes from "./routes/categories.routes.js";
 
 import path from "path";
 
@@ -26,6 +27,7 @@ app.use("/users", usersRoutes);
 app.use("/products", productsRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", ordersRoutes);
+app.use("/categories", categoriesRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
