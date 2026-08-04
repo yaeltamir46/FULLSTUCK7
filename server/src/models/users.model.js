@@ -122,3 +122,111 @@ export async function updatePassword(userId,passwordHash,connection = db) {
 
     return result.affectedRows > 0;
 }
+export async function findAllUsers(limit, offset, connection = db) {
+
+    const limitNumber = Number(limit);
+    const offsetNumber = Number(offset);
+
+    const [rows] = await connection.execute(
+        `
+        SELECT
+            id,
+            first_name AS firstName,
+            last_name AS lastName,
+            email,
+            role,
+            is_active AS isActive,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM users
+        WHERE deleted_at IS NULL
+        ORDER BY created_at DESC
+        LIMIT ${limitNumber} OFFSET ${offsetNumber}
+        `
+        // [limitNumber, offsetNumber]
+    );
+
+    const [countRows] = await connection.execute(
+        `
+        SELECT COUNT(*) AS totalItems
+        FROM users
+        WHERE deleted_at IS NULL
+        `
+    );
+
+    const users = rows.map(user => ({
+        ...user,
+        isActive: Boolean(user.isActive)
+    }));
+
+    return {
+        users,
+        totalItems: Number(countRows[0].totalItems)
+    };
+}
+
+export async function findUserByIdForAdmin(userId, connection = db) {
+
+    const [rows] = await connection.execute(
+        `
+        SELECT
+            id,
+            role,
+            is_active AS isActive
+        FROM users
+        WHERE
+            id = ?
+            AND deleted_at IS NULL
+        `,
+        [userId]
+    );
+
+    const user = rows[0] || null;
+
+    if (user) {
+        user.isActive = Boolean(user.isActive);
+    }
+
+    return user;
+}
+
+export async function updateStatus(userId, isActive, connection = db) {
+
+    const [result] = await connection.execute(
+        `
+        UPDATE users
+        SET is_active = ?
+        WHERE
+            id = ?
+            AND deleted_at IS NULL
+        `,
+        [isActive, userId]
+    );
+
+    return result.affectedRows > 0;
+}
+
+export async function findUserForAuthentication(userId, connection = db) {
+
+    const [rows] = await connection.execute(
+        `
+        SELECT
+            id,
+            role,
+            is_active AS isActive
+        FROM users
+        WHERE
+            id = ?
+            AND deleted_at IS NULL
+        `,
+        [userId]
+    );
+
+    const user = rows[0] || null;
+
+    if (user) {
+        user.isActive = Boolean(user.isActive);
+    }
+
+    return user;
+}

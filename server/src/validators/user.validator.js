@@ -14,3 +14,28 @@ export const updatePasswordSchema = Joi.object({
         .max(12)
         .required()
 });
+
+export const userIdSchema = Joi.object({
+    id: Joi.string()
+        .guid({ version: "uuidv4" })
+        .required()
+});
+
+export const updateUserStatusSchema = Joi.object({
+    isActive: Joi.boolean()
+        .strict()
+        .required()
+});
+
+export const getUsersQuerySchema = Joi.object({
+    page: Joi.number()
+        .integer()
+        .min(1)
+        .default(1),
+
+    limit: Joi.number()
+        .integer()
+        .min(1)
+        .max(100)
+        .default(20)
+});
